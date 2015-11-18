@@ -13,7 +13,7 @@ INSTANCE_TYPE="t2.micro"
 KEY_NAME="irc-server"
 SECURITY_GROUP="IRC"
 IAM_ROLE="irc.codetalk.io"
-ELASTIC_IP=52.29.4.199
+ELASTIC_IP=168.1.1.1
 
 # Launch an EC2 instance
 echo "> Launching the EC2 instance..."
