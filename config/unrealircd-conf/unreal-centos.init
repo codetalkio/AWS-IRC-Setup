@@ -1,0 +1,72 @@
+#!/bin/bash
+#
+#	/etc/rc.d/init.d/unreal
+#
+#	UnrealIRCd IRC Server
+#
+# <tags -- see below for tag definitions.  *Every line* from the top
+#  of the file to the end of the tags section must begin with a #
+#  character.  After the tags section, there should be a blank line.
+#  This keeps normal comments in the rest of the file from being
+#  mistaken for tags, should they happen to fit the pattern.>
+# chkconfig: 2345 20 80
+# description: Starts an UnrealIRCd IRC Server
+# processname: unreal
+
+# Source function library.
+. /etc/init.d/functions
+
+DESC="UnrealIRCd IRC Server"
+NAME=unreal
+DAEMON=/etc/unrealircd/$NAME
+USER=ircd
+GROUP=ircd
+PIDFILE=/etc/unrealircd/pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+
+start() {
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+	echo -n "Starting $DESC: "
+	# daemon --check "unrealircd" --user "$USER" "$DAEMON start"
+	daemon --check "unrealircd" "$DAEMON start"
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$NAME
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n "Shutting down $DESC: "
+	$DAEMON stop
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$NAME
+    echo
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    status)
+	status unrealircd
+	;;
+    restart)
+    $DAEMON restart
+	;;
+    rehash)
+	$DAEMON rehash
+	;;
+    *)
+	echo "Usage: $SCRIPTNAME {start|stop|status|rehash|restart}"
+	exit 1
+	;;
+esac
+exit $?

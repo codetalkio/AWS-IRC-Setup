@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+#	/etc/rc.d/init.d/unreal
+#
+#	Anope IRC Services
+#
+# chkconfig: 2345 20 80
+# description: Starts Anope IRC Services
+# processname: anope
+
+# Source function library.
+. /etc/init.d/functions
+
+DESC="Anope IRC Services"
+NAME=anope
+DAEMON=/etc/anope/bin/services
+USER=ircd
+GROUP=ircd
+PIDFILE=/etc/anope/data/services.pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+
+start() {
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+	echo -n "Starting $DESC: "
+	# daemon --check "services" --user "$USER" $DAEMON
+	daemon --check "services" $DAEMON
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$NAME
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n "Shutting down $DESC: "
+	killproc -p $PIDFILE services 9
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$NAME
+    echo
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    status)
+	status services
+	;;
+    restart)
+    stop
+    start
+	;;
+    *)
+	echo "Usage: $SCRIPTNAME {start|stop|status|restart}"
+	exit 1
+	;;
+esac
+exit $?
